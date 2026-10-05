@@ -9,6 +9,25 @@ type Lexer struct {
 	ch           byte
 }
 
+// Here we are converting our input into a Lexer (new data type).
+// We only initialize its input field.
+// The other fields position, readPosition and ch are automatically initialized to 0.
+// Then readChar() is called to load the first character into l.ch.
+func New(input string) *Lexer {
+	l := &Lexer{input: input}
+	l.readChar()
+	return l
+}
+
+// Generating a Token from a token type and a character/literal.
+func newToken(tokenType token.TokenType, ch byte) token.Token {
+	return token.Token{Type: tokenType, Literal: string(ch)}
+}
+
+// Increasing the position and moving to the next char.
+// A common question is: why do we use readPosition for l.ch?
+// When we initialize our Lexer, position and readPosition are both 0.
+// So we use readPosition to read the current char, then set position to that readPosition to keep track of it, and finally increase readPosition by 1 to point to the next char.
 func (l *Lexer) readChar() {
 	if l.readPosition >= len(l.input) {
 		l.ch = 0
@@ -19,6 +38,8 @@ func (l *Lexer) readChar() {
 	l.readPosition++
 }
 
+// Checks for operators that are made of 2 characters, like == and !=.
+// It looks at the next character without moving the current position.
 func (l *Lexer) peekChar() byte {
 	if l.readPosition >= len(l.input) {
 		return 0
@@ -27,9 +48,54 @@ func (l *Lexer) peekChar() byte {
 	}
 }
 
+// Checking whether the character is a digit.
+func isDigit(ch byte) bool {
+	return '0' <= ch && ch <= '9'
+}
+
+// Reading until the end of a number.
+func (l *Lexer) readNumber() string {
+	position := l.position
+
+	// readNumber() keeps moving forward while the current character is a digit.
+	for isDigit(l.ch) {
+		l.readChar()
+	}
+
+	return l.input[position:l.position]
+}
+
+// Skipping whitespace, new lines, tabs, etc.
+func (l *Lexer) skipWhiteSpace() {
+	for l.ch == ' ' || l.ch == '\t' || l.ch == '\n' || l.ch == '\r' {
+		l.readChar()
+	}
+}
+
+// Checking whether the character is a letter or underscore.
+func isLetter(ch byte) bool {
+	return 'a' <= ch && ch <= 'z' || 'A' <= ch && ch <= 'Z' || ch == '_'
+}
+
+// If the current character is a letter, keep reading until the identifier ends.
+func (l *Lexer) readIdentifier() string {
+	position := l.position
+
+	// Basically, we read the whole word so we can find out whether it is an identifier or a keyword.
+	for isLetter(l.ch) {
+		l.readChar()
+	}
+
+	return l.input[position:l.position]
+}
+
+// Returns the Token for the current character/token.
+// At the end, l.readChar() moves the Lexer towards the next character.
+// For identifiers and numbers, readIdentifier/readNumber already move it forward, so we return early in those cases.
 func (l *Lexer) NextToken() token.Token {
 	var tok token.Token
 	l.skipWhiteSpace()
+
 	switch l.ch {
 	case '=':
 		if l.peekChar() == '=' {
@@ -87,46 +153,7 @@ func (l *Lexer) NextToken() token.Token {
 			tok = newToken(token.ILLEGAL, l.ch)
 		}
 	}
+
 	l.readChar()
 	return tok
-}
-
-func (l *Lexer) readNumber() string {
-	position := l.position
-	for isDigit(l.ch) {
-		l.readChar()
-	}
-	return l.input[position:l.position]
-}
-
-func isDigit(ch byte) bool {
-	return '0' <= ch && ch <= '9'
-}
-
-func (l *Lexer) skipWhiteSpace() {
-	for l.ch == ' ' || l.ch == '\t' || l.ch == '\n' || l.ch == '\r' {
-		l.readChar()
-	}
-}
-
-func (l *Lexer) readIdentifier() string {
-	position := l.position
-	for isLetter(l.ch) {
-		l.readChar()
-	}
-	return l.input[position:l.position]
-}
-
-func isLetter(ch byte) bool {
-	return 'a' <= ch && ch <= 'z' || 'A' <= ch && ch <= 'Z' || ch == '_'
-}
-
-func newToken(tokenType token.TokenType, ch byte) token.Token {
-	return token.Token{Type: tokenType, Literal: string(ch)}
-}
-
-func New(input string) *Lexer {
-	l := &Lexer{input: input}
-	l.readChar()
-	return l
 }

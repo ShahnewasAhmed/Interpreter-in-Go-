@@ -5,6 +5,8 @@ import (
 	"testing"
 )
 
+// This part is for testing whether our lexer is working correctly.
+// We give it some input, define the expected tokens, and then check whether our lexer gives the correct output.
 func TestNextToken(t *testing.T) {
 	input := `let five = 5;
 	let ten = 10;
@@ -21,8 +23,13 @@ func TestNextToken(t *testing.T) {
 	} else {
 	return false;
 	}`
+
+	// We converted our input into a Lexer so it can keep track
+	// of the position of every character while reading the input.
 	l := New(input)
 
+	// Here we are creating a slice of an anonymous struct type.
+	// Each element stores the token type and literal we expect from the lexer.
 	tests := []struct {
 		expectedType    token.TokenType
 		expectedLiteral string
@@ -96,6 +103,8 @@ func TestNextToken(t *testing.T) {
 	}
 
 	for i, tt := range tests {
+		// We go through the expected tokens one by one.
+		// Every time we call NextToken(), the lexer reads the next token and advances its position, so we can compare it with our expected result.
 		tok := l.NextToken()
 
 		if tok.Type != tt.expectedType {
@@ -108,5 +117,4 @@ func TestNextToken(t *testing.T) {
 				i, tt.expectedLiteral, tok.Literal)
 		}
 	}
-
 }
