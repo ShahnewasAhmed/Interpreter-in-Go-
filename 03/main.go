@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"interpreter-go/02/repl"
+	"interpreter-go/03/repl"
 	"os"
 	"os/user"
 )

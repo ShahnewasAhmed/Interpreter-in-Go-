@@ -67,6 +67,11 @@ type IntegerLiteral struct {
 	Value int64
 }
 
+type StringLiteral struct {
+	Token token.Token
+	Value string
+}
+
 type FunctionLiteral struct {
 	Token      token.Token
 	Parameters []*Identifier
@@ -162,6 +167,10 @@ func (b *Boolean) String() string       { return b.Token.Literal }
 func (il *IntegerLiteral) ExpressionNode()      {}
 func (il *IntegerLiteral) TokenLiteral() string { return il.Token.Literal }
 func (il *IntegerLiteral) String() string       { return il.Token.Literal }
+
+func (sl *StringLiteral) ExpressionNode()      {}
+func (sl *StringLiteral) TokenLiteral() string { return sl.Token.Literal }
+func (sl *StringLiteral) String() string       { return sl.Token.Literal }
 
 func (pe *PrefixExpression) ExpressionNode()      {}
 func (pe *PrefixExpression) TokenLiteral() string { return pe.Token.Literal }
