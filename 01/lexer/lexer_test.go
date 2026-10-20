@@ -40,6 +40,7 @@ func TestNextToken(t *testing.T) {
 	13.5.6.8
 	.1.2
 	.1..2
+	{"foo": "bar"}
 	`
 
 	// We converted our input into a Lexer so it can keep track
@@ -144,6 +145,12 @@ func TestNextToken(t *testing.T) {
 		{token.ILLEGAL, "13.5.6.8"},
 		{token.ILLEGAL, ".1.2"},
 		{token.ILLEGAL, ".1..2"},
+		{token.LBRACE, "{"},
+		{token.STRING, "foo"},
+		{token.COLON, ":"},
+		{token.STRING, "bar"},
+		{token.RBRACE, "}"},
+		{token.EOF, ""},
 		{token.EOF, ""},
 	}
 

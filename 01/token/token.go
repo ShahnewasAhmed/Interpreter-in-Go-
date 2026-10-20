@@ -54,6 +54,7 @@ const (
 	GT       = ">"
 	EQ       = "=="
 	NOT_EQ   = "!="
+	COLON    = ":"
 
 	// Delimiters
 	COMMA     = ","

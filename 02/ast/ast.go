@@ -67,6 +67,11 @@ type IntegerLiteral struct {
 	Value int64
 }
 
+type FloatLiteral struct {
+	Token token.Token
+	Value float64
+}
+
 type StringLiteral struct {
 	Token token.Token
 	Value string
@@ -81,6 +86,11 @@ type FunctionLiteral struct {
 type ArrayLiteral struct {
 	Token    token.Token
 	Elements []Expression
+}
+
+type HashLiteral struct {
+	Token token.Token
+	Pairs map[Expression]Expression
 }
 
 type Boolean struct {
@@ -178,6 +188,10 @@ func (b *Boolean) String() string       { return b.Token.Literal }
 func (il *IntegerLiteral) ExpressionNode()      {}
 func (il *IntegerLiteral) TokenLiteral() string { return il.Token.Literal }
 func (il *IntegerLiteral) String() string       { return il.Token.Literal }
+
+func (fl *FloatLiteral) ExpressionNode()      {}
+func (fl *FloatLiteral) TokenLiteral() string { return fl.Token.Literal }
+func (fl *FloatLiteral) String() string       { return fl.Token.Literal }
 
 func (sl *StringLiteral) ExpressionNode()      {}
 func (sl *StringLiteral) TokenLiteral() string { return sl.Token.Literal }
@@ -303,6 +317,23 @@ func (ie *IndexExpression) String() string {
 	out.WriteString("[")
 	out.WriteString(ie.Index.String())
 	out.WriteString("])")
+
+	return out.String()
+}
+
+func (hl *HashLiteral) ExpressionNode()      {}
+func (hl *HashLiteral) TokenLiteral() string { return hl.Token.Literal }
+func (hl *HashLiteral) String() string {
+	var out bytes.Buffer
+
+	pairs := []string{}
+	for key, value := range hl.Pairs {
+		pairs = append(pairs, key.String()+":"+value.String())
+	}
+
+	out.WriteString("{")
+	out.WriteString(strings.Join(pairs, ", "))
+	out.WriteString("}")
 
 	return out.String()
 }
