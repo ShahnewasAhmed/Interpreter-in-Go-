@@ -1,6 +1,7 @@
 package evaluator
 
 import (
+	"fmt"
 	"interpreter-go/03/object"
 )
 
@@ -91,6 +92,15 @@ var builtins = map[string]*object.Builtin{
 			copy(newElements, arr.Elements)
 			newElements = append(newElements, args[1])
 			return &object.Array{Elements: newElements}
+		},
+	},
+
+	"puts": &object.Builtin{
+		Fn: func(args ...object.Object) object.Object {
+			for _, arg := range args {
+				fmt.Println(arg.Inspect())
+			}
+			return &object.Null{Silent: true}
 		},
 	},
 }

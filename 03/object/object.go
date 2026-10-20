@@ -82,7 +82,9 @@ type Builtin struct {
 	Fn BuiltinFunction
 }
 
-type Null struct{}
+type Null struct {
+	Silent bool
+}
 
 func (i *Integer) Inspect() string  { return fmt.Sprintf("%d", i.Value) }
 func (i *Integer) Type() ObjectType { return INTEGER_OBJ }
@@ -93,7 +95,12 @@ func (s *String) Type() ObjectType { return STRING_OBJ }
 func (b *Boolean) Inspect() string  { return fmt.Sprintf("%t", b.Value) }
 func (b *Boolean) Type() ObjectType { return BOOLEAN_OBJ }
 
-func (n *Null) Inspect() string  { return "null" }
+func (n *Null) Inspect() string {
+	if n.Silent {
+		return ""
+	}
+	return "null"
+}
 func (n *Null) Type() ObjectType { return NULL_OBJ }
 
 func (rv *ReturnValue) Inspect() string  { return rv.Value.Inspect() }
