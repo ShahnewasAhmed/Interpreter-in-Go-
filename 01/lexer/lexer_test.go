@@ -28,6 +28,18 @@ func TestNextToken(t *testing.T) {
 	10 != 9;
 	"foobar"
 	"foo bar"
+	[1, 2];
+	123456789
+	0.71
+	.13
+	.
+	..
+	13.
+	..15
+	13...51
+	13.5.6.8
+	.1.2
+	.1..2
 	`
 
 	// We converted our input into a Lexer so it can keep track
@@ -115,6 +127,23 @@ func TestNextToken(t *testing.T) {
 		{token.SEMICOLON, ";"},
 		{token.STRING, "foobar"},
 		{token.STRING, "foo bar"},
+		{token.LBRACKET, "["},
+		{token.INT, "1"},
+		{token.COMMA, ","},
+		{token.INT, "2"},
+		{token.RBRACKET, "]"},
+		{token.SEMICOLON, ";"},
+		{token.INT, "123456789"},
+		{token.FLOAT, "0.71"},
+		{token.FLOAT, ".13"},
+		{token.ILLEGAL, "."},
+		{token.ILLEGAL, ".."},
+		{token.ILLEGAL, "13."},
+		{token.ILLEGAL, "..15"},
+		{token.ILLEGAL, "13...51"},
+		{token.ILLEGAL, "13.5.6.8"},
+		{token.ILLEGAL, ".1.2"},
+		{token.ILLEGAL, ".1..2"},
 		{token.EOF, ""},
 	}
 

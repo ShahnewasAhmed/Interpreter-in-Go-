@@ -53,16 +53,37 @@ func isDigit(ch byte) bool {
 	return '0' <= ch && ch <= '9'
 }
 
+func isDot(ch byte) bool {
+	return '.' == ch
+}
+
 // Reading until the end of a number.
-func (l *Lexer) readNumber() string {
+func (l *Lexer) readNumber() (string, token.TokenType) {
 	position := l.position
 
+	dotCount := 0
 	// readNumber() keeps moving forward while the current character is a digit.
-	for isDigit(l.ch) {
+	for isDigit(l.ch) || isDot(l.ch) {
+		if isDot(l.ch) {
+			dotCount++
+		}
 		l.readChar()
 	}
+	literal := l.input[position:l.position]
 
-	return l.input[position:l.position]
+	if dotCount == 0 {
+		return literal, token.INT
+	}
+
+	if dotCount > 1 {
+		return literal, token.ILLEGAL
+	}
+
+	if literal[len(literal)-1] == '.' {
+		return literal, token.ILLEGAL
+	}
+
+	return literal, token.FLOAT
 }
 
 // Skipping whitespace, new lines, tabs, etc.
@@ -149,6 +170,10 @@ func (l *Lexer) NextToken() token.Token {
 		tok = newToken(token.LBRACE, l.ch)
 	case '}':
 		tok = newToken(token.RBRACE, l.ch)
+	case '[':
+		tok = newToken(token.LBRACKET, l.ch)
+	case ']':
+		tok = newToken(token.RBRACKET, l.ch)
 	case '"':
 		tok.Type = token.STRING
 		tok.Literal = l.readString()
@@ -160,9 +185,8 @@ func (l *Lexer) NextToken() token.Token {
 			tok.Literal = l.readIdentifier()
 			tok.Type = token.LookupIdent(tok.Literal)
 			return tok
-		} else if isDigit(l.ch) {
-			tok.Type = token.INT
-			tok.Literal = l.readNumber()
+		} else if isDigit(l.ch) || isDot(l.ch) {
+			tok.Literal, tok.Type = l.readNumber()
 			return tok
 		} else {
 			tok = newToken(token.ILLEGAL, l.ch)
