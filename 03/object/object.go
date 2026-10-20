@@ -18,6 +18,7 @@ const (
 	FUNCTION_OBJ     = "FUNCTION"
 	STRING_OBJ       = "STRING"
 	BUILTIN_OBJ      = "BUILTIN"
+	ARRAY_OBJ        = "ARRAY"
 )
 
 type ReturnValue struct {
@@ -27,6 +28,10 @@ type ReturnValue struct {
 type Object interface {
 	Type() ObjectType
 	Inspect() string
+}
+
+type Array struct {
+	Elements []Object
 }
 
 type Integer struct {
@@ -98,3 +103,19 @@ func (f *Function) Inspect() string {
 
 func (b *Builtin) Type() ObjectType { return BUILTIN_OBJ }
 func (b *Builtin) Inspect() string  { return "builtin function" }
+
+func (ao *Array) Type() ObjectType { return ARRAY_OBJ }
+func (ao *Array) Inspect() string {
+	var out bytes.Buffer
+
+	elements := []string{}
+	for _, r := range ao.Elements {
+		elements = append(elements, r.Inspect())
+	}
+
+	out.WriteString("[")
+	out.WriteString(strings.Join(elements, ", "))
+	out.WriteString("]")
+
+	return out.String()
+}
